@@ -3,26 +3,14 @@ import { SubtaskStatus, TestCaseStatus } from 'luogu-api';
 import useRecordStatus from './data';
 
 const { formatMemory, formatTime } = await import('@/utils/stringUtils');
-const { ProblemNameWithDifficulty, Spinner } = await import('@w/utils');
+const { ProblemNameWithDifficulty, Spinner } = await import('@w/components');
 const { RecordStatus, getScoreColor, LanguageString, vscodeLanguageId } =
   await import('@/utils/shared');
-const { formatDate } = await import('@/utils/stringUtils');
+const { default: Time } = await import('@w/components/time');
 await import('@w/copyablePreElement');
 
 import '@w/common.css';
 import './app.css';
-
-const AprilFoolTestcaseBackground = {
-  AC: `https://jsdelivrcn.netlify.app/gh/chenyuxuan2009/luogu_submission_better/AC.gif`,
-  WA: `https://jsdelivrcn.netlify.app/gh/chenyuxuan2009/luogu_submission_better/WA.gif`,
-  TLE: `https://jsdelivrcn.netlify.app/gh/chenyuxuan2009/luogu_submission_better/TLE.gif`,
-  MLE: `https://jsdelivrcn.netlify.app/gh/chenyuxuan2009/luogu_submission_better/MLE.gif`,
-  RE: `https://jsdelivrcn.netlify.app/gh/chenyuxuan2009/luogu_submission_better/RE.gif`,
-  OLE: `https://jsdelivrcn.netlify.app/gh/chenyuxuan2009/luogu_submission_better/OLE.gif`,
-  UKE: `https://jsdelivrcn.netlify.app/gh/chenyuxuan2009/luogu_submission_better/UKE.gif`,
-  Judging: `https://jsdelivrcn.netlify.app/gh/chenyuxuan2009/luogu_submission_better/Judging.gif`
-};
-const isRelativeColorSupported = CSS.supports('color', 'hsl(from red h s l)');
 
 export default function App() {
   const record = useRecordStatus();
@@ -78,7 +66,9 @@ export default function App() {
         )}
         <div>
           <span>提交时间</span>
-          <span>{formatDate(record.submitTime * 1000)}</span>
+          <span>
+            <Time time={record.submitTime * 1000} />
+          </span>
         </div>
         <div>
           <span>语言</span>
@@ -99,7 +89,9 @@ export default function App() {
           <span>用时/内存</span>
           <span>
             {record.time !== null ? formatTime(record.time) : '-'} /{' '}
-            {record.memory !== null ? formatMemory(record.memory) : '-'}
+            {record.memory !== null
+              ? formatMemory(record.memory * 2 ** 10)
+              : '-'}
           </span>
         </div>
         {record.sourceCode !== undefined && (
@@ -172,24 +164,12 @@ function TestCaseWarp({
 }
 
 function TestCase({ children: data }: { children: TestCaseStatus }) {
-  const now = new Date();
-  const isAprilFool =
-    now.getFullYear() === 2025 &&
-    now.getMonth() + 1 === 4 &&
-    now.getDate() === 1;
   return (
     <div>
       <div
-        style={
-          isAprilFool && isRelativeColorSupported
-            ? {
-                backgroundImage:
-                  `linear-gradient(hsl(from ${RecordStatus[data.status].color} h s l / 0.5), hsl(from ${RecordStatus[data.status].color} h s l / 0.5)),` +
-                  `url(${AprilFoolTestcaseBackground[RecordStatus[data.status].shortName]})`,
-                backgroundSize: 'cover'
-              }
-            : { backgroundColor: RecordStatus[data.status].color }
-        }
+        style={{
+          backgroundColor: RecordStatus[data.status].color
+        }}
       >
         <div>#{data.id + 1}</div>
         <div>
@@ -201,7 +181,7 @@ function TestCase({ children: data }: { children: TestCaseStatus }) {
         </div>
         {data.status !== 1 && (
           <div>
-            {formatTime(data.time)}/{formatMemory(data.memory)}
+            {formatTime(data.time)}/{formatMemory(data.memory * 2 ** 10)}
           </div>
         )}
       </div>

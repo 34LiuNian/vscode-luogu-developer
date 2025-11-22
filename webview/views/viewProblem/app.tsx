@@ -4,9 +4,9 @@ const { FontAwesomeIcon } = await import('@fortawesome/react-fontawesome');
 const { faChevronDown, faBook } = await import(
   '@fortawesome/free-solid-svg-icons'
 );
-const { ProblemDifficultyTag } = await import('@w/utils');
+const { ProblemDifficultyTag } = await import('@w/components');
 const { default: Markdown } = await import('@w/markdownViewer');
-const { ProblemTag } = await import('@w/utils');
+const { ProblemTag } = await import('@w/components');
 const { default: send } = await import('@w/webviewRequest');
 const { formatTime, formatMemory } = await import('@/utils/stringUtils');
 import { ProblemData } from 'luogu-api';
@@ -81,18 +81,23 @@ export default function Problem({ children: data }: { children: ProblemData }) {
                 onClick={() => send('jumpToCph', undefined)}
                 appearance="primary"
               >
-                <CphIcon /> 传送至 CPH
+                <div>
+                  <CphIcon /> 传送至 CPH
+                </div>
               </VSCodeButton>
             )}
             {data.problem.type !== 'T' &&
               data.problem.type !== 'U' &&
               !data.contest && (
-                <VSCodeButton
-                  appearance="primary"
-                  onClick={() => send('searchSolution', undefined)}
+                <a
+                  href={`command:luogu.solution?${encodeURIComponent(JSON.stringify([data.problem.pid]))}`}
                 >
-                  <FontAwesomeIcon icon={faBook} /> 查看题解
-                </VSCodeButton>
+                  <VSCodeButton appearance="primary">
+                    <div>
+                      <FontAwesomeIcon icon={faBook} /> 查看题解
+                    </div>
+                  </VSCodeButton>
+                </a>
               )}
           </div>
         </div>
